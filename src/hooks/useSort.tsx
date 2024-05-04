@@ -2,13 +2,14 @@ import { createContext, useState, useContext, ReactNode } from 'react'
 import { Platform } from '../api/GameList'
 
 interface SortContextType {
-  sortBy: 'high' | 'low' | null
-  setSortBy: (sortBy: 'high' | 'low' | null) => void
+  sortByRating: 'fromHighRating' | 'fromLowRating' | null
+  setSortByRating: (sortBy: 'fromHighRating' | 'fromLowRating' | null) => void
+
   resetSort: () => void
   platformFilter: Platform[] | null
   setPlatformFilter: (platform: Platform[] | null) => void
   isOnline: 'Single player' | 'Internet' | null
-  seIsOnline: (isOnline: 'Single player' | 'Internet' | null) => void
+  setIsOnline: (isOnline: 'Single player' | 'Internet' | null) => void
 }
 
 const SortContext = createContext<SortContextType | undefined>(undefined)
@@ -16,26 +17,30 @@ const SortContext = createContext<SortContextType | undefined>(undefined)
 export const SortProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [sortBy, setSortBy] = useState<'high' | 'low' | null>(null)
+  const [sortByRating, setSortByRating] = useState<
+    'fromHighRating' | 'fromLowRating' | null
+  >(null)
+
   const [platformFilter, setPlatformFilter] = useState<Platform[] | null>(null)
-  const [isOnline, seIsOnline] = useState<'Single player' | 'Internet' | null>(
+  const [isOnline, setIsOnline] = useState<'Single player' | 'Internet' | null>(
     null
   )
   const resetSort = () => {
-    setSortBy(null)
+    setSortByRating(null)
     setPlatformFilter(null)
+    setIsOnline(null)
   }
 
   return (
     <SortContext.Provider
       value={{
-        sortBy,
-        setSortBy,
+        sortByRating,
+        setSortByRating,
         resetSort,
         platformFilter,
         setPlatformFilter,
         isOnline,
-        seIsOnline,
+        setIsOnline,
       }}
     >
       {children}
