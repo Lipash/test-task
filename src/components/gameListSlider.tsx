@@ -15,7 +15,7 @@ function SampleNextArrow(props: ArrowProps) {
   return (
     <div
       className={className}
-      style={{ ...style, display: 'block', background: 'green' }}
+      style={{ ...style, display: 'block', background: '#000000' }}
       onClick={onClick}
     />
   )
@@ -26,22 +26,21 @@ function SamplePrevArrow(props: ArrowProps) {
   return (
     <div
       className={className}
-      style={{ ...style, display: 'block', background: 'green' }}
+      style={{ ...style, display: 'block', background: '#000000' }}
       onClick={onClick}
     />
   )
 }
 
 export default function GameListSlider() {
-  const { sortBy, platformFilter } = useSort() // Получаем текущий фильтр по платформе из контекста
+  const { sortBy, platformFilter, isOnline } = useSort()
 
-  const sortedGames = Object.values(games)
-    .filter((game: Game) => {
-      if (platformFilter === null) {
+  const sortedGamesByPlatformAndRating = games
+    .filter((game) => {
+      if (!platformFilter) {
         return true
-      } else {
-        return game.platform === platformFilter
       }
+      return platformFilter.some((filter) => game.platform.includes(filter))
     })
     .sort((a: Game, b: Game) => {
       if (sortBy === 'high') {
@@ -55,11 +54,11 @@ export default function GameListSlider() {
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: false,
     draggable: true,
     speed: 500,
     slidesToShow: 4,
-    slidesToScroll: 4,
+    slidesToScroll: 1,
     initialSlide: 0,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
@@ -68,18 +67,18 @@ export default function GameListSlider() {
         breakpoint: 1800,
         settings: {
           slidesToShow: 3,
-          slidesToScroll: 3,
+          slidesToScroll: 1,
         },
       },
       {
-        breakpoint: 1200,
+        breakpoint: 1280,
         settings: {
           slidesToShow: 2,
-          slidesToScroll: 2,
+          slidesToScroll: 1,
         },
       },
       {
-        breakpoint: 500,
+        breakpoint: 636,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
@@ -89,25 +88,25 @@ export default function GameListSlider() {
   }
 
   return (
-    <div className="bg-blue-500 h-5/6 w-5/6">
+    <div className=" w-5/6 justify-center items-center self-center text-center font-medium text-lg">
       <Slider {...settings}>
-        {sortedGames.map((game) => (
-          <div
-            key={game.name}
-            className="flex text-center font-medium text-base"
-          >
-            <h3 className=" font-semibold text-2xl">{game.name}</h3>
-            <img
-              className="max-h-[700px] min-h-[700px]"
-              src={game.cover}
-              alt={game.name}
-              style={{ width: '100%', height: 'auto' }}
-            />
+        {sortedGamesByPlatformAndRating.map((game: Game) => (
+          <div key={game.name}>
+            <h3 className="font-semibold text-4xl md:text-3xl lg:text-4xl xl:text-3xl">
+              {game.name}
+            </h3>
+            <div className="flex justify-center">
+              <img
+                className="max-h-[500px] min-h-[500px] min-w-4/6 md:min-h-[600px] lg:min-h-[700px] lg:min-w-[427px]  xl:min-h-[600px] xl:min-w-[365px]  2xl:min-h-[700px] 2xl:min-w-[427px]"
+                src={game.cover}
+                alt={game.name}
+              />
+            </div>
             <p>Рейтинг: {game.rating}</p>
-            <p>Платформа: {game.platform}</p>
+            <p>Платформы: {game.platform.join(', ')}</p>
             {game.connection && (
               <>
-                <p>Соединение: {game.connection}</p>
+                <p>Есть онлайн режим</p>
                 <p>Макс. онлайн: {game.maxOnline}</p>
               </>
             )}

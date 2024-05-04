@@ -1,13 +1,14 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react'
-
-type SortType = 'high' | 'low'
+import { createContext, useState, useContext, ReactNode } from 'react'
+import { Platform } from '../api/GameList'
 
 interface SortContextType {
-  sortBy: SortType | null
-  setSortBy: (sortBy: SortType | null) => void
+  sortBy: 'high' | 'low' | null
+  setSortBy: (sortBy: 'high' | 'low' | null) => void
   resetSort: () => void
-  platformFilter: 'pc' | 'xbox' | 'ps' | null
-  setPlatformFilter: (platform: 'pc' | 'xbox' | 'ps' | null) => void
+  platformFilter: Platform[] | null
+  setPlatformFilter: (platform: Platform[] | null) => void
+  isOnline: 'Single player' | 'Internet' | null
+  seIsOnline: (isOnline: 'Single player' | 'Internet' | null) => void
 }
 
 const SortContext = createContext<SortContextType | undefined>(undefined)
@@ -15,10 +16,11 @@ const SortContext = createContext<SortContextType | undefined>(undefined)
 export const SortProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [sortBy, setSortBy] = useState<SortType | null>(null)
-  const [platformFilter, setPlatformFilter] = useState<
-    'pc' | 'xbox' | 'ps' | null
-  >(null)
+  const [sortBy, setSortBy] = useState<'high' | 'low' | null>(null)
+  const [platformFilter, setPlatformFilter] = useState<Platform[] | null>(null)
+  const [isOnline, seIsOnline] = useState<'Single player' | 'Internet' | null>(
+    null
+  )
   const resetSort = () => {
     setSortBy(null)
     setPlatformFilter(null)
@@ -32,6 +34,8 @@ export const SortProvider: React.FC<{ children: ReactNode }> = ({
         resetSort,
         platformFilter,
         setPlatformFilter,
+        isOnline,
+        seIsOnline,
       }}
     >
       {children}
