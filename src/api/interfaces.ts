@@ -4,6 +4,14 @@ export enum Platform {
   Ps = 'ps',
 }
 
+export type SortType =
+  | 'platform'
+  | 'subsLang'
+  | 'dubsLang'
+  | 'isOnline'
+  | 'ratingLow'
+  | 'ratingHigh'
+
 export interface Game {
   id: number
   name: string
@@ -11,7 +19,7 @@ export interface Game {
   rating: number
   platform: Platform[]
   maxOnline?: number
-  connection: 'Internet' | 'Single player'
+  isConnection: boolean
   subtitlesLang: string
   dubbingLang: string
 }

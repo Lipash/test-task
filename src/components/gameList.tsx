@@ -1,59 +1,87 @@
 import { useEffect, useState } from 'react'
-import { Game } from '../api/interfaces'
-import quickSort from '../features/quickSort'
+import { Game, Platform, SortType } from '../api/interfaces'
 
 export default function gameList() {
-  const [games, setGames] = useState<Game[]>([])
+  const [sortedGames, setsortedGames] = useState<Game[]>([])
+  const [originalGames, setOriginalGames] = useState<Game[]>([])
+  const [sortState, setSortState] = useState({ type: '', value: '' })
+  console.log(sortState.type, sortState.value)
 
   const getApiData = async () => {
     const response = await fetch(
       'https://66366fa9415f4e1a5e276190.mockapi.io/games'
     ).then((response) => response.json())
 
-    setGames(response)
+    setsortedGames(response)
+    setOriginalGames(response)
   }
 
   useEffect(() => {
     getApiData()
   }, [])
 
-  const sortByRatingFromLow = () =>
-    quickSort(games, (gameA, gameB) => gameA.rating - gameB.rating)
+  const sortGames = (type: SortType, value: Platform | string | boolean) => {
+    let sortedGames: Game[]
 
-  const sortByRatingFromHigh = () =>
-    quickSort(games, (gameA, gameB) => gameB.rating - gameA.rating)
+    switch (type) {
+      case 'platform':
+        sortedGames = originalGames.filter((game: Game) =>
+          game.platform.includes(value as Platform)
+        )
+        break
+      case 'subsLang':
+        sortedGames = originalGames.filter((game: Game) =>
+          game.subtitlesLang.includes(value as string)
+        )
+        break
+      case 'dubsLang':
+        sortedGames = originalGames.filter((game: Game) =>
+          game.dubbingLang.includes(value as string)
+        )
+        break
+      case 'isOnline':
+        sortedGames = originalGames.filter(
+          (game: Game) => game.isConnection === value
+        )
+        break
+      case 'ratingLow':
+        sortedGames = [...originalGames].sort(
+          (a: Game, b: Game) => a.rating - b.rating
+        )
+        break
+      case 'ratingHigh':
+        sortedGames = [...originalGames].sort(
+          (a: Game, b: Game) => b.rating - a.rating
+        )
+        break
+      default:
+        sortedGames = originalGames
+    }
 
-  const sortByPlatform = () => {}
-
-  const sortBySubsLang = () => {}
-
-  const sortByDubsLang = () => {}
-
-  const sortByIsOnline = () => {}
+    setsortedGames(sortedGames)
+  }
 
   return (
     <>
-      <div className="col-span-12 row-span-1 justify-center flex gap-10 text-3xl pb-20 items-center text-center">
+      {/* <div className="col-span-12 row-span-1 justify-center flex gap-10 text-3xl pb-20 items-center text-center">
         Sort by:
-        <button onClick={() => console.log(sortByRatingFromHigh(games))}>
-          Up
+        <button onClick={() => sortGames('ratingLow', true)}>Up</button>
+        <button onClick={() => sortGames('ratingHigh', true)}>Down</button>
+        <button onClick={() => sortGames('platform', Platform.PC)}>PC</button>
+        <button onClick={() => sortGames('platform', Platform.Ps)}>Ps</button>
+        <button onClick={() => sortGames('platform', Platform.Xbox)}>
+          Xbox
         </button>
-        <button onClick={() => console.log(sortByRatingFromLow(games))}>
-          Down
-        </button>
-        <button onClick={() => console.log(2)}>PC</button>
-        <button onClick={() => console.log(3)}>Ps</button>
-        <button onClick={() => console.log(4)}>Xbox</button>
-        <button onClick={() => console.log(5)}>Subs</button>
-        <button onClick={() => console.log(6)}>Dubs</button>
-        <button onClick={() => console.log(7)}>Online</button>
-        <button onClick={() => console.log(8)}>Solo Games</button>
-        <button onClick={() => console.log(9)}>reset</button>
-      </div>
+        <button onClick={() => sortGames('subsLang', 'russian')}>Subs</button>
+        <button onClick={() => sortGames('dubsLang', 'Russian')}>Dubs</button>
+        <button onClick={() => sortGames('isOnline', true)}>Online</button>
+        <button onClick={() => sortGames('isOnline', false)}>Solo Games</button>
+        <button onClick={() => setsortedGames(originalGames)}>reset</button>
+      </div> */}
       <div className="justify-center flex text-center font-medium text-lg place-content-center">
         <div className="grid grid-cols-5 gap-4">
-          {games.map((game: Game) => (
-            <div key={game.name} className="max-w-xs">
+          {sortedGames.map((game: Game) => (
+            <div key={game.name + game.id} className="max-w-xs">
               <h3 className="font-semibold text-4xl md:text-3xl lg:text-4xl xl:text-3xl">
                 {game.name}
               </h3>
@@ -62,11 +90,13 @@ export default function gameList() {
               </div>
               <p>Рейтинг: {game.rating}</p>
               <p>Платформы: {game.platform.join(', ')}</p>
-              {game.connection && (
+              {game.isConnection ? (
                 <>
                   <p>Есть онлайн режим</p>
                   <p>Макс. онлайн: {game.maxOnline}</p>
                 </>
+              ) : (
+                <>Для одного игрока</>
               )}
               <p>Субтитры: {game.subtitlesLang}</p>
               <p>Дубляж: {game.dubbingLang}</p>
