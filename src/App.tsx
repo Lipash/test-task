@@ -6,7 +6,6 @@ const App: React.FC = () => {
     <div className="grid grid-rows-12 grid-cols-12 min-h-screen max-h-screen bg-[#000000] text-white">
       <Header />
       <div className="col-span-12 row-span-11 ">
-        {/* justify-center flex  */}
         <GameList />
       </div>
     </div>
