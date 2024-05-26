@@ -4,10 +4,12 @@ export default function Modal({
   isOpen,
   onClose,
   children,
+  totalCost,
 }: {
   isOpen: boolean
   onClose: Dispatch<SetStateAction<boolean>>
   children: React.ReactNode
+  totalCost: number
 }) {
   if (!isOpen) {
     return null
@@ -21,6 +23,7 @@ export default function Modal({
       onClose(true)
     }
   }
+
   return (
     <div
       onClick={handleOutsideClick}
@@ -40,7 +43,7 @@ export default function Modal({
             Close
           </button>
           <button className="bg-blueButton p-3 px-16 rounded-2xl text-2xl">
-            Buy
+            Buy {totalCost}$
           </button>
         </div>
       </div>

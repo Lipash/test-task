@@ -1,26 +1,19 @@
-import { useEffect } from 'react'
 import { Game } from '../api/interfaces'
 import { useDispatch, useSelector } from 'react-redux'
-import { setOriginalGamesRedux } from '../redux/slices/sortGamesSlice'
-import { AppDispatch, RootState } from '../redux/store'
+import { RootState } from '../redux/store'
+import { addItem } from '../redux/slices/shop'
 
 export default function gameList() {
-  const dispatch = useDispatch<AppDispatch>()
-
-  const getApiData = async () => {
-    const response = await fetch('http://localhost:3000/games').then(
-      (response) => response.json()
-    )
-    dispatch(setOriginalGamesRedux(response))
-  }
-
-  useEffect(() => {
-    getApiData()
-  }, [])
-
   const originalGamesRedux = useSelector(
     (state: RootState) => state.sortGames.sortedGames
   )
+
+  const dispatch = useDispatch()
+
+  const handleButtonClick = (gameTitle: string, gamePrice: string | null) => {
+    const price = gamePrice ? parseFloat(gamePrice.replace('$', '')) : 0
+    dispatch(addItem({ title: gameTitle, price: price }))
+  }
 
   return (
     <>
@@ -28,7 +21,7 @@ export default function gameList() {
         <div className="grid grid-cols-5 gap-4">
           {originalGamesRedux.map((game: Game) => (
             <div
-              key={game.name + game.id}
+              key={`${game.name}_${game.id}`}
               className="max-w-xs flex flex-col justify-between"
             >
               <div>
@@ -52,7 +45,12 @@ export default function gameList() {
               <p>Субтитры: {game.subtitlesLang}</p>
               <p>Дубляж: {game.dubbingLang}</p>
               {game.price ? <p>Цена:{game.price}</p> : <p>Free2Play</p>}
-              <button className="bg-green-700">Купить</button>
+              <button
+                className="bg-green-700"
+                onClick={() => handleButtonClick(game.name, game.price)}
+              >
+                Купить
+              </button>
             </div>
           ))}
         </div>

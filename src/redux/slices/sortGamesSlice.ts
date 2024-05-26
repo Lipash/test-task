@@ -23,8 +23,6 @@ const sortGamesSlice = createSlice({
       state.sortedGames = state.originalGames.filter((game: Game) =>
         game.platform.includes(action.payload as Platform)
       )
-      console.log(state.originalGames)
-      console.log(state.sortedGames)
     },
     sortBySubsLang: (state, action) => {
       state.sortedGames = state.originalGames.filter((game: Game) =>

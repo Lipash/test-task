@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from '../redux/store'
+import { deleteItem } from '../redux/slices/shop'
 import Modal from './modal'
 
-function ShopModal() {
+const ShopModal: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const handleOpenModal = () => {
     setIsModalOpen(true)
@@ -11,29 +14,40 @@ function ShopModal() {
     setIsModalOpen(false)
   }
 
+  const shopState = useSelector((state: RootState) => state.shop.items)
+  const dispatch = useDispatch<AppDispatch>()
+  const totalCost = useSelector((state: RootState) => state.shop.fullPrice)
   return (
     <div>
       <button
         onClick={handleOpenModal}
-        className=" bg-buttonOrangeGradient dark:bg-darkButtonOrangeGradient m-[10px] px-10 py-5 text-center uppercase transi duration-500 bg-auto text-white shadow-lg block rounded-xl"
+        className="bg-buttonOrangeGradient dark:bg-darkButtonOrangeGradient m-[10px] px-10 py-5 text-center uppercase transi duration-500 bg-auto text-white shadow-lg block rounded-xl"
       >
-        SHOP
+        SHOP {totalCost}$
       </button>
-
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <h1>sadasdas</h1>
-        {/* {originalGamesRedux.map((game: Game) => (
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        totalCost={totalCost}
+      >
+        <>
+          {shopState.map((item) => (
             <div
-              key={game.name + game.id}
+              key={item.id}
               className="max-w-xs flex flex-col justify-between"
             >
               <div>
                 <h3 className="font-semibold text-4xl md:text-3xl lg:text-4xl xl:text-3xl">
-                  {game.name}
+                  {item.title}
                 </h3>
-              {game.price ? <p>Цена:{game.price}</p> : <p>Free2Play</p>}
+                {item.price ? <p>Цена: {item.price}</p> : <p>Free2Play</p>}
+              </div>
+              <button onClick={() => dispatch(deleteItem(item.id))}>
+                remove
+              </button>
             </div>
-          ))} */}
+          ))}
+        </>
       </Modal>
     </div>
   )
